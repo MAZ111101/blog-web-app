@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <title>Register</title>
+</head>
+<body>
+  <h2>Register</h2>
+  <form id="registerForm">
+    <input id="email" type="email" placeholder="Email" required><br>
+    <input id="password" type="password" placeholder="Password" required><br>
+    <button type="submit">Register</button>
+  </form>
+
+  <div id="message"></div>
+
+  <p><a href="/search">Search Blogs</a></p>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault(); // prevent default form submit
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const result = await response.json();
+      document.getElementById('message').innerText = result.message || result.error || 'Unexpected error';
+
+      if (result.message) {
+        // Optionally redirect to login after success
+        setTimeout(() => window.location.href = "/login", 1000);
+      }
+    });
+  </script>
+</body>
+</html>

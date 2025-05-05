@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Login</title>
+</head>
+<body>
+  <h2>Login</h2>
+  <form id="loginForm">
+    <input id="email" type="email" placeholder="Email" required><br>
+    <input id="password" type="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+  </form>
+
+  <div id="message"></div>
+
+  <p><a href="/search">Search Blogs</a></p>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault(); // prevent traditional form submit
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const result = await response.json();
+      document.getElementById('message').innerText = result.message || result.error || 'Unexpected error';
+
+      if (result.message) {
+        // Optionally redirect on success:
+        setTimeout(() => window.location.href = "/dashboard", 1000);
+      }
+    });
+  </script>
+</body>
+</html>

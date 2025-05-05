@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Blogs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <h2>My Blogs</h2>
+  <div id="results"></div>
+
+  <script>
+    async function fetchMyBlogs() {
+      try {
+        const response = await fetch('/api/myblogs');
+        const data = await response.json();
+
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+
+        if (response.ok && data.length > 0) {
+          data.forEach(blog => {
+            const blogEl = document.createElement('div');
+            blogEl.innerHTML = `
+              <h3><a href="/blogs/${blog.blog_id}">${blog.title}</a></h3>
+              <p>Word Count: ${blog.word_count}</p>
+              <p><em>${new Date(blog.created_at).toLocaleString()}</em></p>
+              <hr>
+            `;
+            resultsDiv.appendChild(blogEl);
+          });
+        } else if (response.status === 401) {
+          resultsDiv.innerHTML = `<p><strong>Unauthorized:</strong> Please <a href="/login">log in</a> to view your blogs.</p>`;
+        } else {
+          resultsDiv.innerHTML = `<p>${data.error || 'No blogs found'}</p>`;
+        }
+      } catch (error) {
+        document.getElementById('results').innerHTML = `<p>Error loading blogs.</p>`;
+        console.error(error);
+      }
+    }
+
+    // Call the function on page load
+    fetchMyBlogs();
+  </script>
+</body>
+</html>

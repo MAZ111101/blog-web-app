@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Create Blog</title>
+</head>
+<body>
+  <h2>Create a New Blog</h2>
+  <form id="blogForm">
+    <input type="text" id="title" placeholder="Title" required><br>
+    <textarea id="content" placeholder="Your blog content..." rows="10" cols="50" required></textarea><br>
+    <button type="submit">Submit</button>
+  </form>
+  <div id="message"></div>
+
+  <script>
+    document.getElementById('blogForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const content = document.getElementById('content').value;
+
+      const response = await fetch('/api/blogs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title, content })
+      });
+
+      const result = await response.json();
+      document.getElementById('message').innerText = result.message || result.error;
+
+      if (result.blog_id) {
+        setTimeout(() => window.location.href = `/blogs/${result.blog_id}`, 1000);
+      }
+    });
+  </script>
+</body>
+</html>
